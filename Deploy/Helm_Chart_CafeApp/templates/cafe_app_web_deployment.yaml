@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-cafeweb
+  labels:
+    app: cafeapp
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: cafeapp
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: cafeapp
+        tier: frontend
+    spec:
+      containers:
+      - name: cafeweb
+        image: {{ .Values.cafeweb.image }}:{{ .Values.cafeweb.tag }}
+        ports:
+        - containerPort: 80
+        env:
+        - name: MYSQL_HOST
+          value: {{ .Release.Name }}-mysql
+        - name: MYSQL_DATABASE
+          value: {{ .Values.mysql.database }}
+        - name: MYSQL_USER
+          value: {{ .Values.mysql.user }}
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mysql-pass
+              key: password
+        volumeMounts:
+        - name: app-config-volume
+          mountPath: /var/www/html/getAppParameters.php
+          subPath: getAppParameters.php
+      volumes:
+      - name: app-config-volume
+        configMap:
+          name: {{ .Release.Name }}-cafeweb-config

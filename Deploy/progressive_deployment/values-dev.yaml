@@ -1,0 +1,24 @@
+replicaCount: 1
+
+mysql:
+  image: bacdocker/mompopcafedb:v1
+  database: mom_pop_db
+  user: root
+
+cafeweb:
+  image: bacdocker/mompopcafeapp
+  tag: v2
+
+persistentVolume:
+  size: 10Gi
+  hostPath: "/mnt/data/dev"
+
+config:
+  showServerInfo: "false"
+  timeZone: "America/New_York"
+  currency: "$"
+  #db_url: "cafeapp-helm-mysql"
+  db_name: "mom_pop_db"
+  db_user: "root"
+  db_password: "Msois@123"
+

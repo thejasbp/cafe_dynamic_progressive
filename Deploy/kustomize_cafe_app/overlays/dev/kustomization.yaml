@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dev
+bases:
+  - ../../base
+
+patchesStrategicMerge:
+  - patch-deployment.yaml
+  - patch-replicas.yaml
+
+configMapGenerator:
+  - name: cafeapp-config-dev
+    literals:
+      - showServerInfo=false
+      - timeZone=America/New_York
+      - currency=$
+      - db_url=10.32.0.8 
+      - db_name=mom_pop_db
+      - db_user=root
+      - db_password=Msois@123
+
+namePrefix: dev-
+commonLabels:
+  environment: dev
+

@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: {{ .Release.Name }}-rollout-analysis
+  namespace: default
+spec:
+  metrics:
+  - name: success-rate
+    interval: 10s
+    successCondition: result >= 0.8
+    failureCondition: result < 0.8
+    count: 5
+    failureLimit: 3
+    provider:
+      prometheus:
+        address: http://172.16.51.59:31090
+        query: |
+          scalar(
+            sum(rate(istio_requests_total{app="cafeapp",destination_service="{{ .Release.Name }}-cafeweb-canary.default.svc.cluster.local",response_code=~"2.*"}[10m]))
+            /
+            sum(rate(istio_requests_total{app="cafeapp",destination_service="{{ .Release.Name }}-cafeweb-canary.default.svc.cluster.local"}[10m]))
+          )
+
+  - name: avg-req-duration
+    interval: 10s
+    successCondition: result <= 1000
+    failureCondition: result > 1000
+    count: 5
+    failureLimit: 3
+    provider:
+      prometheus:
+        address: http://172.16.51.59:31090
+        query: |
+          scalar(
+            sum(rate(istio_request_duration_milliseconds_sum{app="cafeapp",destination_service="{{ .Release.Name }}-cafeweb-canary.default.svc.cluster.local"}[1h]))
+            /
+            sum(rate(istio_request_duration_milliseconds_count{app="cafeapp",destination_service="{{ .Release.Name }}-cafeweb-canary.default.svc.cluster.local"}[1h]))
+          )

@@ -1,0 +1,20 @@
+---
+# Default variables for cafeweb role
+
+# URL to download the application tarball
+app_tarball_url: "https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/ILT-TF-200-ACSOPS-1/activity-3/mompopcafe.tar.gz"
+
+# Path to download and extract the tarball
+app_tarball_dest: "/tmp/mompopcafe.tar.gz"
+app_extract_dest: "/var/www/html/mompopcafe/"
+
+# Apache configuration file template
+apache_config_template: "000-default.conf.j2"
+
+# Path for getAppParameters.php file
+get_app_parameters_src: "getAppParameters.php.j2"
+get_app_parameters_dest: "/var/www/html/mompopcafe/getAppParameters.php"
+
+# Optional - Directory for getAppParameters.php on the host
+get_app_parameters_host_dest: "/etc/cafe/getAppParameters.php.j2"
+

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cafeweb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cafeapp
+  template:
+    metadata:
+      labels:
+        app: cafeapp
+    spec:
+      containers:
+        - name: cafeweb
+          image: sreedocker123/mompopcafeapp:v1
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config-volume
+              mountPath: /var/www/html/getAppParameters.php
+              subPath: getAppParameters.php
+      volumes:
+        - name: config-volume
+          configMap:
+            name: cafeapp-config
+

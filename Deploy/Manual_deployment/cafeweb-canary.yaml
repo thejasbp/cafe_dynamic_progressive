@@ -1,0 +1,32 @@
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: cafeapp-helm-cafeweb
+  namespace: default
+  labels:
+    app: cafeapp-canary
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cafeapp-helm-cafeweb-primary
+  service:
+    port: 80
+    targetPort: 80
+    gateways:
+      - cafeweb-gateway  # Add this line to specify the gateway
+    hosts:
+      - "*"
+  analysis:
+    interval: 1m
+    #iterations: 3  # Define the number of iterations Flagger should use for analysis
+    threshold: 5
+    maxWeight: 60
+    stepWeight: 20
+    metrics:
+      - name: request-success-rate
+        threshold: 99
+      - name: request-duration
+        threshold: 500
+    # Ensure that the analysis block is correct and conforms to the schema
+    # You may also want to specify other metrics depending on your use case

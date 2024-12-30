@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  labels:
+    environment: stage
+spec:
+  capacity:
+    storage: 15Gi
+  hostPath:
+    path: /mnt/stage/data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  labels:
+    environment: stage
+spec:
+  resources:
+    requests:
+      storage: 15Gi
+
+

@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: cafeweb
+  namespace: default
+spec:
+  host: cafeapp-helm-cafeweb
+  subsets:
+    - name: primary
+      labels:
+        app: cafeapp-helm-cafeweb
+        version: primary
+    - name: canary
+      labels:
+        app: cafeapp-helm-cafeweb
+        version: canary
+
+

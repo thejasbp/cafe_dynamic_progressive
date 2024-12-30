@@ -1,0 +1,40 @@
+# Base values file for the Helm chart
+
+replicaCount: 1
+
+mysql:
+  image: "sreedocker123/mompopcafedb:v1"
+  rootPassword: "Msois@123"
+  database: "mom_pop_db"
+  user: "root"
+
+cafeweb:
+  image: "sreedocker123/mompopcafeapp"
+  tag: "v1"
+
+persistentVolume:
+  storageSize: "20Gi"
+  hostPath: "/mnt/data/default"
+
+service:
+  type: ClusterIP
+  port: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: []
+
+config:
+  getAppParameters.php: |
+    <?php
+      $showServerInfo = "false";
+      $timeZone = "America/New_York";
+      $currency = "$";
+      $db_url = "mysql";
+      $db_name = "mom_pop_db";
+      $db_user = "root";
+      $db_password = "Msois@123";
+    ?>
+

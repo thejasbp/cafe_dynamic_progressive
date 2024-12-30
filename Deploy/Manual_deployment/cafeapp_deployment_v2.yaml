@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cafeapp-helm-cafeweb-canary
+  labels:
+    app: cafeapp-helm-cafeweb
+    version: canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cafeapp-helm-cafeweb
+      version: canary
+  template:
+    metadata:
+      labels:
+        app: cafeapp-helm-cafeweb
+        version: canary
+    spec:
+      containers:
+      - name: cafeapp-helm-cafeweb
+        image: sreedocker123/mompopcafeapp:v2
+        ports:
+        - containerPort: 80
+

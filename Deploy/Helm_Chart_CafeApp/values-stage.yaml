@@ -1,0 +1,24 @@
+replicaCount: 2
+
+mysql:
+  image: sreedocker123/mompopcafedb:v1 
+  database: mom_pop_db
+  user: root
+
+cafeweb:
+  image: sreedocker123/mompopcafeapp
+  tag: v1
+
+persistentVolume:
+  size: 15Gi
+  hostPath: "/mnt/data/stage"
+
+config:
+  showServerInfo: "false"
+  timeZone: "Europe/London"
+  currency: "€"
+  db_url: "mysql"
+  db_name: "mom_pop_db"
+  db_user: "root"
+  db_password: "Msois@123"
+

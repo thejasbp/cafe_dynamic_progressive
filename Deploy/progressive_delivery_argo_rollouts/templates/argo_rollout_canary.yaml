@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ .Release.Name }}-cafeweb-rollout
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: cafeapp
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: cafeapp
+        tier: frontend
+    spec:
+      containers:
+      - name: cafeweb
+        image: {{ .Values.cafeweb.image }}:{{ .Values.cafeweb.tag }}
+        ports:
+        - containerPort: 80
+        env:
+        - name: MYSQL_HOST
+          value: {{ .Release.Name }}-mysql
+        - name: MYSQL_DATABASE
+          value: {{ .Values.mysql.database }}
+        - name: MYSQL_USER
+          value: {{ .Values.mysql.user }}
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mysql-pass
+              key: password
+        volumeMounts:
+        - name: app-config-volume
+          mountPath: /var/www/html/getAppParameters.php
+          subPath: getAppParameters.php
+      volumes:
+      - name: app-config-volume
+        configMap:
+          name: {{ .Release.Name }}-cafeweb-config
+  strategy:
+    canary:
+      stableService: {{ .Release.Name }}-cafeweb-stable
+      canaryService: {{ .Release.Name }}-cafeweb-canary
+      trafficRouting:
+        istio:
+          virtualService:
+            name: {{ .Release.Name }}-virtualservice
+            routes:
+            - primary
+      steps:
+      - setWeight: 20
+      - pause: {duration: 30s}
+      - analysis:
+          templates:
+          - templateName: {{ .Release.Name }}-rollout-analysis
+      - setWeight: 40
+      - pause: {duration: 30s}
+      - analysis:
+          templates:
+          - templateName: {{ .Release.Name }}-rollout-analysis
+      - setWeight: 60
+      - pause: {duration: 30s}
+      - analysis:
+          templates:
+          - templateName: {{ .Release.Name }}-rollout-analysis
+      - setWeight: 100

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-cafeweb-stable
+  namespace: default
+spec:
+  selector:
+    app: cafeapp
+    tier: frontend
+  ports:
+  - port: 80
+    targetPort: 80

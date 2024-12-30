@@ -1,0 +1,95 @@
+# apiVersion: flagger.app/v1beta1
+# kind: Canary
+# metadata:
+#   name: {{ .Release.Name }}-cafeweb-canary
+#   namespace: default
+# spec:
+#   targetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: {{ .Release.Name }}-cafeweb
+#   service:
+#     port: 80
+#     targetPort: 80
+#     gateways:
+#       - {{ .Release.Name }}-gateway
+#     hosts:
+#       - "*"
+#   analysis:
+#     interval: 30s
+#     threshold: 3
+#     maxWeight: 100
+#     stepWeight: 20
+#     metrics:
+#       - name: request-success-rate
+#         threshold: 99
+#         interval: 30s
+#       - name: request-duration
+#         threshold: 500
+#         interval: 30s
+#   canaryMetadata:
+#     labels:
+#       app: cafeapp
+#       tier: frontend
+#   podTemplate:
+#     metadata:
+#       labels:
+#         app: cafeapp
+#         tier: frontend
+#     spec:
+#       containers:
+#         - name: cafeweb
+#           image: {{ .Values.cafeweb.image }}:{{ .Values.cafeweb.tag }}
+#           ports:
+#             - containerPort: 80
+#           env:
+#             - name: MYSQL_HOST
+#               value: {{ .Release.Name }}-mysql
+#             - name: MYSQL_DATABASE
+#               value: {{ .Values.mysql.database }}
+#             - name: MYSQL_USER
+#               value: {{ .Values.mysql.user }}
+#             - name: MYSQL_ROOT_PASSWORD
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: {{ .Release.Name }}-mysql-pass
+#                   key: password
+#           volumeMounts:
+#             - name: app-config-volume
+#               mountPath: /var/www/html/getAppParameters.php
+#               subPath: getAppParameters.php
+#       volumes:
+#         - name: app-config-volume
+#           configMap:
+#             name: {{ .Release.Name }}-cafeweb-config
+
+
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: {{ .Release.Name }}-canary
+  namespace: default
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-cafeweb
+  service:
+    port: 80
+    targetPort: 80
+    gateways:
+      - {{ .Release.Name }}-gateway
+    hosts:
+      - "*"
+  analysis:
+    interval: 30s
+    threshold: 3
+    maxWeight: 60
+    stepWeight: 20
+    metrics:
+      - name: request-success-rate
+        threshold: 99
+        interval: 30s
+      - name: request-duration
+        threshold: 500
+        interval: 30s

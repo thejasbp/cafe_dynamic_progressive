@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cafeweb
+spec:
+  template:
+    spec:
+      containers:
+      - name: cafeweb
+        image: sreedocker123/mompopcafeapp:v1
+  replicas: 2
